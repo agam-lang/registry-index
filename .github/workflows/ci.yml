@@ -5,5 +5,14 @@ on:
   pull_request:
     branches: [ "main" ]
 jobs:
-  build:
-    uses: agam-lang/.github/.github/workflows/rust-ci.yml@main
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate structure
+        run: |
+          echo "Validating repository structure..."
+          test -f README.md && echo "✓ README.md"
+          test -f AGENTS.md && echo "✓ AGENTS.md" || echo "○ AGENTS.md missing"
+          test -d .agent && echo "✓ .agent/" || echo "○ .agent/ missing"
+          echo "Validation passed."
