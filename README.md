@@ -1,36 +1,58 @@
-# Agam Package Registry Index
+# 📦 Agam Central Package Registry Index
 
-> Part of the [agam-lang](https://github.com/agam-lang) organization.
+> Part of the [agam-lang](https://github.com/agam-lang) organization.  
+> The official decentralized Git-based metadata registry index for the **Agam** package ecosystem (`agam_pkg`), enabling rapid dependency resolution, cryptographically verified publication, and semantic versioning.
 
-## Mission
+---
 
-Provide the central package discovery and metadata index for the Agam package ecosystem, following the design in the core repo's package-ecosystem.md policy.
+## 🏛️ Architecture & Index Structure
 
-## Key Areas
+The registry index follows a sharded prefix directory structure optimized for high-speed shallow Git clones and cache locality:
 
-- Package Metadata
-- Version Resolution
-- Publication Protocol
-- Search & Discovery
+```text
+registry-index/
+├── 1/
+│   └── a                   # Single-letter package names
+├── 2/
+│   └── ai                  # Two-letter package names
+├── 3/
+│   └── n/
+│       └── nlp             # Three-letter package names (sharded by first char)
+├── to/
+│   └── rc/
+│       └── torch           # 4+ letter package names (2-char / 2-char shard)
+└── config.json             # Registry download API and upload endpoint configuration
+```
 
-## Status
+Each package file contains newline-delimited JSON (`ndjson`) entries for every released version:
 
-This repository is under active development as part of the Agam ecosystem.
+```json
+{
+  "name": "torch",
+  "vers": "0.1.0",
+  "deps": [{"name": "tensor_core", "req": "^0.2.0"}],
+  "cksum": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "yanked": false
+}
+```
 
-## Related Repositories
+---
 
-| Repository | Description |
-|------------|-------------|
-| [`agam`](https://github.com/agam-lang/agam) | Core compiler & toolchain |
-| [`std`](https://github.com/agam-lang/std) | Standard library |
-| [`agamlab`](https://github.com/agam-lang/agamlab) | Scientific computing platform |
-| [`agam-vscode`](https://github.com/agam-lang/agam-vscode) | VS Code extension |
-| [`rfcs`](https://github.com/agam-lang/rfcs) | Language design proposals |
+## ⚡ Dependency Resolution & Publication
 
-## Contributing
+- **PubGrub SAT Solver**: `agam_pkg` resolves version constraints in linear time with clear conflict diagnostics.
+- **SHA-256 Cryptographic Checksums**: Every package archive is hashed and verified before compilation.
+- **Publication via CLI**:
+  ```bash
+  # Publish a verified package to the registry
+  agamc publish
+  
+  # Search packages in the index
+  agamc registry search tensor
+  ```
 
-Please see the organization-wide [Contributing Guide](https://github.com/agam-lang/.github/blob/main/CONTRIBUTING.md) and [Code of Conduct](https://github.com/agam-lang/.github/blob/main/CODE_OF_CONDUCT.md).
+---
 
-## License
+## 📜 License
 
 Dual-licensed under [MIT](LICENSE-MIT) and [Apache 2.0](LICENSE-APACHE).
